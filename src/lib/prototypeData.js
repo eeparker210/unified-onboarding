@@ -97,21 +97,21 @@ export const jobOptions = [
     title: 'Increase AI visibility',
     description:
       'Strengthen your presence in search, map surfaces, and AI assistants by publishing listings and local pages together.',
-    outcomes: ['Listings baseline', 'Pages launch', 'AI readiness check'],
+    outcomes: ['Listings preparation', 'Local pages creation', 'AI readiness check'],
   },
   {
     id: 'conversion',
     title: 'Increase conversion',
     description:
       'Turn discovery into action with polished pages, stronger calls to action, and ready-to-publish location details.',
-    outcomes: ['CTA tuning', 'Pages preview', 'Conversion prompts'],
+    outcomes: ['CTA tuning', 'Pages preview', 'Social profiles sync'],
   },
   {
     id: 'customers',
     title: 'Connect with customers',
     description:
-      'Make it easier for customers to find the right store, call, and engage across major publishers.',
-    outcomes: ['Publisher sync', 'Contact consistency', 'Follow-up tasks'],
+      'Make it easier for customers to engage with you, and for you to close the loop.',
+    outcomes: ['Social profiles sync', 'Contact consistency', 'Prepare a campaign'],
   },
 ];
 
@@ -129,12 +129,7 @@ export const listingsPublishers = [
   {
     name: 'Apple Business Connect',
     state: '1 task left',
-    detail: 'Add fresh storefront photography for 2 locations.',
-  },
-  {
-    name: 'Bing Places',
-    state: 'Ready to publish',
-    detail: 'Location records meet publisher requirements.',
+    detail: 'Add a square brand logo that is at least 64 px by 64 px.',
   },
 ];
 
@@ -152,14 +147,14 @@ export const aiChecks = [
     note: 'Addresses, hours, and store identifiers are machine readable.',
   },
   {
-    label: 'LLM answerability',
-    value: 'Medium',
-    note: 'Add richer product FAQs to improve long-tail question coverage.',
-  },
-  {
     label: 'Citation confidence',
     value: 'Strong',
     note: 'Consistent data across listings and pages reduces ambiguity.',
+  },
+    {
+    label: 'LLM answerability',
+    value: 'Medium',
+    note: 'Add richer product FAQs to improve long-tail question coverage.',
   },
 ];
 
