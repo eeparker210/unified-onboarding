@@ -252,82 +252,261 @@ function App() {
 
   const renderFlowCard = () => {
     if (step === 'location profile') {
+      const primaryLocation = locations[0];
+      const weeklyHours = [
+        ['Monday', '9:00 AM - 8:00 PM'],
+        ['Tuesday', '9:00 AM - 8:00 PM'],
+        ['Wednesday', '9:00 AM - 8:00 PM'],
+        ['Thursday', '9:00 AM - 8:00 PM'],
+        ['Friday', '9:00 AM - 9:00 PM'],
+        ['Saturday', '10:00 AM - 9:00 PM'],
+        ['Sunday', '10:00 AM - 7:00 PM'],
+      ];
+
       return (
         <div className="screen screen--directory">
           <div className="directory-topbar">
             <div className="directory-brand">
-              <div className="brand-mark">L</div>
+              <div className="directory-logo-mark" aria-hidden="true">
+                <span className="directory-logo-mark__dot" />
+                <span className="directory-logo-mark__stem" />
+              </div>
               <div>
                 <strong>Location.com</strong>
                 <span>Powered by Yext</span>
               </div>
             </div>
-            <div className="search-pill">Search brands</div>
+            <div className="directory-search-pill">
+              <span>Search brands</span>
+              <div className="directory-search-pill__icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16">
+                  <path d="M11.2 6.8a4.4 4.4 0 11-8.8 0 4.4 4.4 0 018.8 0zm-1.02 3.95a5.16 5.16 0 01-3.38 1.25A5.2 5.2 0 1112 6.8c0 1.29-.47 2.47-1.25 3.38l3.53 3.54a.4.4 0 01-.57.56l-3.53-3.53z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <nav className="directory-breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span>/</span>
+            <a href="/">Shopping</a>
+            <span>/</span>
+            <a href="/">Illinois</a>
+            <span>/</span>
+            <a href="/">Chicago</a>
+            <span>/</span>
+            <span>{business.name}</span>
+          </nav>
+
+          <div className="hero-banner directory-hero-banner">
+            <img className="directory-hero-scene" src="https://images.unsplash.com/photo-1576712967455-c8d22580e9be?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"></img>
           </div>
 
           <div className="directory-grid">
             <div className="profile-column">
-              <div className="hero-banner candy-banner">
-                <div className="banner-copy">
-                  <span className="status-badge status-badge--soft">{business.status}</span>
-                  <h2>{business.name}</h2>
-                  <p>{business.tagline}</p>
-                </div>
-              </div>
+              <div className="directory-main-column detail-card detail-card--plain">
+                <div className="directory-main-stack">
+                  <section className="directory-section directory-section--intro">
+                    <div className="directory-status-chip">
+                      <svg viewBox="0 0 256 256" aria-hidden="true">
+                        <path d="M128 26a102 102 0 100 204 102 102 0 000-204zm0 180a78 78 0 110-156 78 78 0 010 156zm-6-94V84a6 6 0 0112 0v28a6 6 0 01-12 0zm6 48a10 10 0 110-20 10 10 0 010 20z" />
+                      </svg>
+                      <span>{business.status}</span>
+                    </div>
 
-              <div className="detail-card detail-card--plain">
-                <div className="action-row">
-                  <button className="primary-button">Get directions</button>
-                  <button className="secondary-button">Call</button>
-                  <button className="secondary-button">Website</button>
-                </div>
+                    <h1 className="heading heading-lead">{business.name}</h1>
 
-                <div className="two-column-info">
-                  <div>
-                    <h3>Business details</h3>
-                    <ul className="info-list">
-                      <li>{locations[0].address}</li>
-                      <li>{business.phone}</li>
-                      <li>{business.website}</li>
-                      <li>{business.category}</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h3>Hours</h3>
-                    <ul className="hours-list">
-                      <li>
-                        <span>Today</span>
-                        <strong>{locations[0].hours}</strong>
-                      </li>
-                      <li>
-                        <span>Status</span>
-                        <strong>{business.openStatus}</strong>
-                      </li>
-                      <li>
-                        <span>Locations</span>
-                        <strong>{business.locationCount}</strong>
-                      </li>
-                    </ul>
-                  </div>
+                    <div className="directory-hours-status">
+                      <div className="HoursStatus">
+                        <span className="HoursStatus-current is-open">Open Now</span>
+                        <svg className="HoursStatus-separator inline-block" viewBox="0 0 4 4" aria-hidden="true">
+                          <circle cx="2" cy="2" r="2" />
+                        </svg>
+                        <span className="HoursStatus-future">Closes at</span>
+                        <span className="HoursStatus-time"> 8:00 PM</span>
+                      </div>
+                    </div>
+
+                    <div className="directory-actions">
+                      <a
+                        href="https://maps.google.com/?q=1457+N+Milwaukee+Ave+Chicago+IL+60622"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="button button-primary"
+                      >
+                        <svg viewBox="0 0 16 16" aria-hidden="true">
+                          <path d="M8 1.2A3 3 0 015 4.2c0 2.06 3 5.8 3 5.8s3-3.74 3-5.8a3 3 0 00-3-3zm0 4.2a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zM1 5.6l3-1.2v7.8L1 13.4V5.6zm5 .5l4 .9v7.8l-4-.9V6.1zm5 .9l4-1.5v7.8L11 14.8V7z" />
+                        </svg>
+                        <span>Get Directions</span>
+                      </a>
+                      <a href="https://www.momandpoplollipop.com/party-orders" target="_blank" rel="noopener noreferrer" className="button button-secondary">
+                        <svg viewBox="0 0 16 16" aria-hidden="true">
+                          <path d="M13.6 9.3V.8L8.4 1.5v8.85l5.2-1.05zM7.6 10.35V1.5L2.4.8v8.5l5.2 1.05zM0 1.6C0 1.15.36.8.8.8h14.4c.44 0 .8.35.8.8v8.83c0 .38-.27.71-.64.78l-7.04 1.41a1.7 1.7 0 01-.63 0L.64 11.2A.8.8 0 010 10.43V1.6z" />
+                        </svg>
+                        <span>Menu</span>
+                      </a>
+                      <a href="tel:+18775550118" className="button button-secondary">
+                        <svg viewBox="0 0 16 16" aria-hidden="true">
+                          <path d="M10.82 9.58c-.37-.16-.8-.06-1.06.26l-.72.88a8.4 8.4 0 01-3.44-3.44l.88-.72c.32-.26.42-.69.26-1.06L5.7 3.1a1 1 0 00-1.12-.58l-2.4.52a1 1 0 00-.8.98A11.2 11.2 0 0012.6 15.22a1 1 0 00.98-.8l.52-2.4a1 1 0 00-.58-1.12l-2.7-1.12z" />
+                        </svg>
+                        <span>Call</span>
+                      </a>
+                      <a href={business.website} target="_blank" rel="noopener noreferrer" className="button button-secondary">
+                        <svg viewBox="0 0 16 16" aria-hidden="true">
+                          <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm5.96 7h-2.17a12.2 12.2 0 00-.75-3.22A6.43 6.43 0 0113.96 7zM8 1.63c.49 0 1.43 1.12 1.92 4.37H6.08C6.57 2.75 7.51 1.63 8 1.63zM4.96 3.78A12.2 12.2 0 004.21 7H2.04a6.43 6.43 0 012.92-3.22zM1.63 8c0-.1 0-.2.02-.3H3.9c-.03.3-.04.6-.04.9 0 .47.03.93.08 1.4H1.9A6.77 6.77 0 011.63 8zm.78 2.8h2.02c.17.83.43 1.62.77 2.42A6.44 6.44 0 012.4 10.8zm3.67 0h3.84C9.43 14.05 8.49 15.17 8 15.17c-.49 0-1.43-1.12-1.92-4.37zm4.96 2.42c.34-.8.6-1.6.77-2.42h2.02a6.44 6.44 0 01-2.79 2.42zM12.1 10c.05-.47.08-.93.08-1.4 0-.3-.01-.6-.04-.9h2.25c.02.1.02.2.02.3 0 .69-.1 1.36-.31 2h-2zm-5.2-.8a10.4 10.4 0 010-2.4h4.2a10.4 10.4 0 010 2.4H6.9z" />
+                        </svg>
+                        <span>Website</span>
+                      </a>
+                    </div>
+                  </section>
+
+                  <section className="directory-section">
+                    <h2 className="heading heading-sub">Business Details</h2>
+
+                    <div className="directory-detail-list">
+                      <div className="directory-detail-item">
+                        <svg viewBox="0 0 16 16" aria-hidden="true">
+                          <path d="M8 1.6a4.8 4.8 0 00-4.8 4.8c0 2.18 2.93 6.08 4.21 7.68a.74.74 0 001.18 0c1.28-1.6 4.21-5.5 4.21-7.68A4.8 4.8 0 008 1.6zm0 6.8a2 2 0 110-4 2 2 0 010 4z" />
+                        </svg>
+                        <a
+                          href="https://maps.google.com/?q=1457+N+Milwaukee+Ave+Chicago+IL+60622"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="link-primary"
+                        >
+                          {primaryLocation.address}
+                        </a>
+                      </div>
+
+                      <div className="directory-detail-item">
+                        <svg viewBox="0 0 16 16" aria-hidden="true">
+                          <path d="M10.82 9.58c-.37-.16-.8-.06-1.06.26l-.72.88a8.4 8.4 0 01-3.44-3.44l.88-.72c.32-.26.42-.69.26-1.06L5.7 3.1a1 1 0 00-1.12-.58l-2.4.52a1 1 0 00-.8.98A11.2 11.2 0 0012.6 15.22a1 1 0 00.98-.8l.52-2.4a1 1 0 00-.58-1.12l-2.7-1.12z" />
+                        </svg>
+                        <a href="tel:+18775550118" className="link-primary">
+                          {business.phone}
+                        </a>
+                      </div>
+
+                      <div className="directory-detail-item">
+                        <svg viewBox="0 0 16 16" aria-hidden="true">
+                          <path d="M10 1.6a.8.8 0 100 1.6h2.07L6.92 8.35a.8.8 0 101.13 1.13l5.15-5.15V6.4a.8.8 0 101.6 0V2a.8.8 0 00-.8-.8H10zM3.2 3.2A1.6 1.6 0 001.6 4.8v8A1.6 1.6 0 003.2 14.4H12a1.6 1.6 0 001.6-1.6V9.2a.8.8 0 10-1.6 0v3.6H3.2v-8h3.6a.8.8 0 000-1.6H3.2z" />
+                        </svg>
+                        <a href={business.website} target="_blank" rel="noopener noreferrer" className="link-primary">
+                          {business.website}
+                        </a>
+                      </div>
+
+                      <div className="directory-detail-item directory-detail-item--social">
+                        <svg viewBox="0 0 16 10" aria-hidden="true">
+                          <path d="M3.2.2A3.2 3.2 0 000 3.4 3.2 3.2 0 003.2 6.6H4a.4.4 0 000-.8h-.8A2.4 2.4 0 01.8 3.4 2.4 2.4 0 013.2 1h4.4A2.4 2.4 0 0110 3.4c0 1.26-.97 2.3-2.23 2.39l-.2.01a.4.4 0 00.06.8l.2-.01A3.2 3.2 0 0010.8 3.4 3.2 3.2 0 007.6.2H3.2zm9.6 9.6A3.2 3.2 0 0016 6.6 3.2 3.2 0 0012.8 3.4H12a.4.4 0 000 .8h.8a2.4 2.4 0 012.4 2.4A2.4 2.4 0 0112.8 9H8.4A2.4 2.4 0 016 6.6c0-1.26.97-2.3 2.23-2.39l.2-.01a.4.4 0 00-.06-.8l-.2.01A3.2 3.2 0 005.2 6.6a3.2 3.2 0 003.2 3.2h4.4z" />
+                        </svg>
+                        <div className="directory-social-row">
+                          <a href="https://maps.google.com/?q=1457+N+Milwaukee+Ave+Chicago+IL+60622" target="_blank" rel="noopener noreferrer" className="button button-social">
+                            <span className="directory-social-dot directory-social-dot--google" />
+                            <span>Google</span>
+                          </a>
+                          <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" className="button button-social">
+                            <span className="directory-social-dot directory-social-dot--tiktok" />
+                            <span>TikTok</span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section className="directory-section">
+                    <h2 className="heading heading-sub">About</h2>
+                    <div className="directory-meta-row">
+                      <svg viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M3.17 9.22V3.75c0-.32.26-.58.58-.58h5.47c.31 0 .61.12.83.34l6.44 6.44a1.17 1.17 0 010 1.66l-4.88 4.88a1.17 1.17 0 01-1.66 0L3.51 10.05a1.17 1.17 0 01-.34-.83zm2.93-3.13a.88.88 0 100 1.76.88.88 0 000-1.76z" />
+                      </svg>
+                      <div className="directory-meta-tags">
+                        <span>{business.category}</span>
+                        <span className="bullet" />
+                        <span>Gift Shop</span>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section className="directory-section">
+                    <h2 className="heading heading-sub">Location</h2>
+                    <div className="directory-location-layout">
+                      <a
+                        href="https://maps.google.com/?q=1457+N+Milwaukee+Ave+Chicago+IL+60622"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="directory-map-card"
+                      >
+                        <div className="directory-map">
+                          <div className="directory-map__road directory-map__road--one" />
+                          <div className="directory-map__road directory-map__road--two" />
+                          <div className="directory-map__road directory-map__road--three" />
+                          <div className="directory-map__pin" />
+                        </div>
+                        <span className="sr-only">Open map for Mom and Pop Lollipop Shop</span>
+                      </a>
+
+                      <div className="directory-location-copy">
+                        <div className="directory-location-name">{primaryLocation.name}</div>
+                        <div className="directory-location-address">{primaryLocation.address}</div>
+                        <a
+                          href="https://maps.google.com/?q=1457+N+Milwaukee+Ave+Chicago+IL+60622"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="link-primary"
+                        >
+                          Get Directions
+                        </a>
+                      </div>
+                    </div>
+                  </section>
                 </div>
               </div>
             </div>
 
             <aside className="certify-card">
-              <p className="eyebrow">Uncertified profile</p>
-              <h3>Claim this brand and launch a guided setup.</h3>
-              <p>
-                Yext already found enough public data to draft listings and local pages for {business.locationCount}{' '}
-                locations.
-              </p>
-              <ul className="check-list">
-                <li>Validate your brand once</li>
-                <li>Preview listings and pages before paying</li>
-                <li>Publish to customers and LLMs when you are ready</li>
-              </ul>
-              <button className="primary-button" onClick={startCertification}>
-                Certify your brand
-              </button>
+              <div className="directory-certify-card__top">
+                <h3>This profile is uncertified and using publicly sourced data</h3>
+              </div>
+              <div className="directory-certify-card__body">
+                <p>
+                  Yext customers see up to a 9% lift on Google Gemini and gain access to:
+                </p>
+                <ul className="check-list">
+                  <li>Performance insights across AI and traditional search</li>
+                  <li>Competitive benchmarking for your locations</li>
+                  <li>Clear, actionable recommendations to improve visibility</li>
+                  <li>AI-powered tools to manage your digital presence at scale</li>
+                </ul>
+                <button className="directory-certify-button" onClick={startCertification}>
+                  Certify your brand
+                </button>
+              </div>
+            </aside>
+
+            <aside className="directory-hours-rail">
+              <h2 className="heading heading-sub">Hours</h2>
+              <div className="directory-hours-rail__status">
+                <div className="HoursStatus">
+                  <span className="HoursStatus-current is-open">Open Now</span>
+                  <svg className="HoursStatus-separator inline-block" viewBox="0 0 4 4" aria-hidden="true">
+                    <circle cx="2" cy="2" r="2" />
+                  </svg>
+                  <span className="HoursStatus-future">Closes at</span>
+                  <span className="HoursStatus-time"> 8:00 PM</span>
+                </div>
+              </div>
+              <div className="directory-hours-table">
+                {weeklyHours.map(([day, hours]) => (
+                  <div
+                    className={`directory-hours-row ${day === 'Wednesday' ? 'is-today' : ''}`}
+                    key={day}
+                  >
+                    <span>{day}</span>
+                    <span>{hours}</span>
+                  </div>
+                ))}
+              </div>
             </aside>
           </div>
         </div>
