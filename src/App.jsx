@@ -11,6 +11,7 @@ import {
 import appleLogo from './assets/apple-logo.png';
 import facebookLogo from './assets/facebook-logo.png';
 import googleLogo from './assets/google-logo.png';
+import lollipopLogo from './assets/lollipop-logo.png';
 import scoutImage from './assets/scout.png';
 
 const stepRoutes = {
@@ -91,6 +92,8 @@ function App() {
   const [wantsHostedDomain, setWantsHostedDomain] = useState(true);
   const [selectedPublisherName, setSelectedPublisherName] = useState('Google Business Profile');
   const [hasGeneratedFaqs, setHasGeneratedFaqs] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isReadinessOpen, setIsReadinessOpen] = useState(false);
   const [productSelections, setProductSelections] = useState({
     listings: null,
     pages: null,
@@ -110,6 +113,14 @@ function App() {
     return () => window.removeEventListener('popstate', syncStepFromLocation);
   }, []);
 
+  useEffect(() => {
+    setIsCartOpen(false);
+  }, [step]);
+
+  useEffect(() => {
+    setIsReadinessOpen(false);
+  }, [step, selectedLocation]);
+
   const navigateToStep = (nextStep, { replace = false } = {}) => {
     const nextPath = stepRoutes[nextStep] ?? stepRoutes['location profile'];
     const method = replace ? 'replaceState' : 'pushState';
@@ -127,6 +138,8 @@ function App() {
     () => locations.find((location) => location.id === selectedLocation) ?? locations[0],
     [selectedLocation]
   );
+
+  const getLocationDisplayName = (location) => `${location.businessName} - ${location.city}`;
 
   const selectedOnboardingLocations = useMemo(
     () => locations.filter((location) => selectedListingIds.includes(location.id)),
@@ -177,6 +190,32 @@ function App() {
 
   const displayedAiVisibilityScore = hasGeneratedFaqs ? 93 : business.aiVisibilityScore;
 
+  const pageLocationLabel = useMemo(() => {
+    const city = pageLocation.address.split(', ')[1] ?? 'Chicago';
+    return `${pageLocation.city}, ${city}`;
+  }, [pageLocation.address, pageLocation.city]);
+
+  const pagePreviewEmail = useMemo(() => {
+    const slug = (pageLocation.city ?? 'shop')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '.')
+      .replace(/^\.+|\.+$/g, '');
+    return `${slug}@momandpoplollipop.com`;
+  }, [pageLocation.city]);
+
+  const pagePreviewHours = useMemo(
+    () => [
+      ['Monday', pageLocation.hours],
+      ['Tuesday', pageLocation.hours],
+      ['Wednesday', pageLocation.hours],
+      ['Thursday', pageLocation.hours],
+      ['Friday', pageLocation.hours.includes('8:00 PM') ? pageLocation.hours.replace('8:00 PM', '9:00 PM') : pageLocation.hours],
+      ['Saturday', '10:00 AM - 9:00 PM'],
+      ['Sunday', '10:00 AM - 7:00 PM'],
+    ],
+    [pageLocation.hours]
+  );
+
   const removeOnboardingLocation = (locationId) => {
     setSelectedListingIds((current) => current.filter((id) => id !== locationId));
   };
@@ -205,21 +244,84 @@ function App() {
       listings: 'Listings',
       pages: 'Local pages',
     };
+    const productDescriptions = {
+      listings: `${selectedOnboardingLocations.length} locations selected`,
+      pages: wantsHostedDomain ? 'Hosted page package' : 'Custom domain staging',
+    };
+    const productPricing = {
+      listings: '$79/mo',
+      pages: '$70/mo',
+    };
+    const itemCount = liveProducts.length;
+    const totalPrice = liveProducts.reduce((sum, product) => {
+      if (product === 'listings') return sum + 79;
+      if (product === 'pages') return sum + 70;
+      return sum;
+    }, 0);
+
+    if (!isCartOpen) {
+      return (
+        <button
+          type="button"
+          className="cart-summary-toggle"
+          onClick={() => setIsCartOpen(true)}
+          aria-label="Open cart"
+          aria-expanded="false"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M1.6 2h1.63l.54 2.4h9.43a.8.8 0 01.77 1.03l-1.02 3.6a.8.8 0 01-.77.57H5.13a.8.8 0 01-.78-.62L2.77 2.8H1.6a.8.8 0 110-1.6zm4.2 11.2a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4zm6 0a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4z" />
+          </svg>
+        </button>
+      );
+    }
 
     return (
       <div className="cart-summary-banner">
-        <strong>Your bundle</strong>
-        <div className="cart-summary-banner__items">
-          {liveProducts.length ? (
-            liveProducts.map((product) => (
-              <span className="cart-pill cart-pill--live" key={product}>
-                {productLabels[product]}
-              </span>
-            ))
-          ) : (
-            <span className="muted-copy">No products in your bundle yet.</span>
-          )}
+        <div className="cart-summary-banner__header">
+          <div>
+            <strong className="cart-summary-banner__title">Your cart</strong>
+            <div className="cart-summary-banner__meta">
+              {itemCount ? `${itemCount} item${itemCount === 1 ? '' : 's'}` : 'Empty'}
+            </div>
+          </div>
+          <button
+            type="button"
+            className="cart-summary-banner__icon"
+            onClick={() => setIsCartOpen(false)}
+            aria-label="Close cart"
+            aria-expanded="true"
+          >
+            <svg viewBox="0 0 16 16">
+              <path d="M1.6 2h1.63l.54 2.4h9.43a.8.8 0 01.77 1.03l-1.02 3.6a.8.8 0 01-.77.57H5.13a.8.8 0 01-.78-.62L2.77 2.8H1.6a.8.8 0 110-1.6zm4.2 11.2a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4zm6 0a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4z" />
+            </svg>
+          </button>
         </div>
+
+        {itemCount ? (
+          <>
+            <div className="cart-summary-banner__items">
+              {liveProducts.map((product) => (
+                <div className="cart-line-item" key={product}>
+                  <div className="cart-line-item__copy">
+                    <strong>{productLabels[product]}</strong>
+                    <span>{productDescriptions[product]}</span>
+                  </div>
+                  <div className="cart-line-item__price">{productPricing[product]}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="cart-summary-banner__footer">
+              <span>Subtotal</span>
+              <strong>${totalPrice}/mo</strong>
+            </div>
+          </>
+          ) : (
+            <div className="cart-summary-banner__empty">
+              <span className="muted-copy">No products in your cart yet.</span>
+              <span className="cart-summary-banner__empty-note">Add listings or pages to start your bundle.</span>
+            </div>
+          )}
       </div>
     );
   };
@@ -518,9 +620,9 @@ function App() {
         <div className="screen screen--setup">
           <SectionIntro
             // eyebrow="Step 0"
-            title="Log in or create your Yext account"
-            body="Your account is your gateway to managing your brand's presence across search engines, maps, and more."
-            aside={<div className="metric-pill">Estimated setup time: 8 minutes</div>}
+            title="Let's build your digital presence together"
+            body="Your Yext account is your gateway to managing your brand's presence across search engines, maps, and more."
+            aside={<div className="metric-pill">Estimated time to go live: 8 minutes</div>}
           />
 
           <div className="panel-grid panel-grid--two">
@@ -566,12 +668,11 @@ function App() {
             </div>
 
             <div className="panel">
-              <h3>What happens next</h3>
+              <h3>What you need to get started</h3>
               <ul className="check-list">
-                <li>We use company size to route you into self-serve or sales-assisted onboarding</li>
-                <li>Choose how you want Yext to improve your brand's digital presence</li>
-                <li>Provide some details to make your digital presence come to life</li>
-                <li>Go live, fast!</li>
+                <li>Your company's digital presence goals</li>
+                <li>Some basic information about your brand</li>
+                <li>A payment method for when you're ready to go live, fast!</li>
               </ul>
             </div>
           </div>
@@ -724,7 +825,9 @@ function App() {
                       ✎
                     </span>
                   </div>
-                  <div className="logo-token">{business.brand.logoMark}</div>
+                  <div className="logo-token logo-token--image">
+                    <img src={lollipopLogo} alt={`${business.name} logo`} className="brand-logo-image" />
+                  </div>
                 </div>
                 <div>
                   <div className="asset-label-row">
@@ -795,7 +898,7 @@ function App() {
                     {selectedOnboardingLocations.map((location) => (
                       <div className="location-row location-row--managed" key={location.id}>
                         <div>
-                          <strong>{location.name}</strong>
+                          <strong>{getLocationDisplayName(location)}</strong>
                           <p>{location.address}</p>
                         </div>
                         <button
@@ -808,31 +911,6 @@ function App() {
                     ))}
                   </div>
                 </div>
-
-                {/* <div>
-                  <span className="field-label">Available to add back</span>
-                  <div className="location-list location-list--managed">
-                    {remainingLocations.length ? (
-                      remainingLocations.map((location) => (
-                        <div className="location-row location-row--managed" key={location.id}>
-                          <div>
-                            <strong>{location.name}</strong>
-                            <p>{location.address}</p>
-                          </div>
-                          <button
-                            className="primary-button primary-button--compact"
-                            onClick={() => addOnboardingLocation(location.id)}
-                            disabled={selectedOnboardingLocations.length >= 5}
-                          >
-                            Add
-                          </button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="muted-copy">All scanned locations are currently included.</p>
-                    )}
-                  </div>
-                </div> */}
               </div>
             </div>
           </div>
@@ -857,6 +935,7 @@ function App() {
 
       return (
         <div className="screen screen--setup">
+          <div className="bundle-summary-slot">{renderCartSummary()}</div>
           <StepRail currentStep={step} />
           <SectionIntro
             eyebrow="Listings setup"
@@ -874,8 +953,14 @@ function App() {
               </div>
               <div className="publisher-list">
                 {listingsPublishers.map((publisher) => (
-                  <div className="publisher-row" key={publisher.name}>
-                    <div className="publisher-row__main">
+                  <div
+                    className={`publisher-row ${
+                      publisher.name === selectedPublisherName ? 'publisher-row--selected' : ''
+                    }`}
+                    key={publisher.name}
+                    onClick={() => setSelectedPublisherName(publisher.name)}
+                  >
+                    <div className="publisher-row__main"> 
                       <div className="publisher-row__brand">
                         <img
                           src={publisherLogos[publisher.name]}
@@ -892,29 +977,23 @@ function App() {
                         {publisher.state}
                       </span>
                     </div>
-                    <button
-                      className="secondary-button secondary-button--compact"
-                      onClick={() => setSelectedPublisherName(publisher.name)}
-                    >
-                      Review
-                    </button>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="panel map-preview-panel">
-              <h3>Preview on {selectedPublisher.name}</h3>
+                <img
+                    src={publisherLogos[selectedPublisher.name]}
+                    alt={`${selectedPublisher.name} logo`}
+                    className="platform-card__network-logo"
+                  />
+              <h3>Preview of listing for {selectedPublisher.name}</h3>
+
               <div className="maps-preview">
                 <div className={`maps-preview__canvas ${!isGooglePreview ? 'maps-preview__canvas--plain' : ''}`}>
                   {isGooglePreview ? (
                     <>
-                      <div className="maps-preview__toolbar">
-                        <span className="maps-preview__search">
-                          {business.name} on {selectedPublisher.name}
-                        </span>
-                        <span className="maps-preview__zoom">+</span>
-                      </div>
                       <div className="maps-preview__roads maps-preview__roads--one" />
                       <div className="maps-preview__roads maps-preview__roads--two" />
                       <div className="maps-preview__roads maps-preview__roads--three" />
@@ -946,11 +1025,6 @@ function App() {
                         </div>
                         <p>{locations[0].address}</p>
                         <p>{business.phone}</p>
-                        <div className="maps-preview__chips">
-                          <span>Candy</span>
-                          <span>Party favors</span>
-                          <span>Gift boxes</span>
-                        </div>
                         <div className="maps-preview__actions">
                           <span>Directions</span>
                           <span>Call</span>
@@ -961,15 +1035,7 @@ function App() {
                   ) : null}
 
                   {isFacebookPreview ? (
-                    <div className="platform-card platform-card--facebook">
-                      <div className="platform-card__header">
-                        <img
-                          src={publisherLogos[selectedPublisher.name]}
-                          alt={`${selectedPublisher.name} logo`}
-                          className="platform-card__network-logo"
-                        />
-                        <span>Facebook Page Preview</span>
-                      </div>
+                    <div className="platform-card platform-card--facebook"> 
                       <div className="platform-card__hero">Storefront cover photo</div>
                       <div className="platform-card__body">
                         <div className="platform-card__identity">
@@ -996,14 +1062,7 @@ function App() {
 
                   {isApplePreview ? (
                     <div className="platform-card platform-card--apple">
-                      <div className="platform-card__header">
-                        <img
-                          src={publisherLogos[selectedPublisher.name]}
-                          alt={`${selectedPublisher.name} logo`}
-                          className="platform-card__network-logo"
-                        />
-                        <span>Apple place card preview</span>
-                      </div>
+                    
                       <div className="platform-card__body platform-card__body--apple">
                         <div className="platform-card__identity">
                           <div className="platform-card__avatar platform-card__avatar--apple">
@@ -1063,16 +1122,10 @@ function App() {
                 Skip for now
               </button>
               <button
-                className="secondary-button"
-                onClick={() => setProductDecision('listings', 'draft', 'pages')}
-              >
-                Continue with listings draft
-              </button>
-              <button
                 className="primary-button"
                 onClick={() => setProductDecision('listings', 'live', 'pages')}
               >
-                Add listings to cart
+                Add listings to bundle
               </button>
             </div>
           </div>
@@ -1083,6 +1136,7 @@ function App() {
     if (step === 'pages') {
       return (
         <div className="screen screen--setup">
+          <div className="bundle-summary-slot">{renderCartSummary()}</div>
           <StepRail currentStep={step} />
           <SectionIntro
             eyebrow="Pages preview"
@@ -1090,88 +1144,192 @@ function App() {
             body={`Because you chose “${activeJob.title},” we are recommending pages alongside listings. Review a sample page, then decide whether you want to publish on your own domain or use the faster location.com launch option.`}
           />
 
-          <div className="panel-grid pages-layout">
-            <div className="page-preview-shell">
-              <div className="page-preview-topbar">
-                <div className="page-url">preview.{business.launchUrl}/{pageLocation.id}</div>
-                <select value={selectedLocation} onChange={(event) => setSelectedLocation(event.target.value)}>
-                  {locations.map((location) => (
-                    <option key={location.id} value={location.id}>
-                      {location.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="page-preview-canvas">
-                <div className="page-preview-hero" style={{ '--accent': selectedAccent }}>
-                  <div>
-                    <span className="status-badge">Open now</span>
-                    <h2>{pageLocation.name}</h2>
-                    <p>{pageLocation.address}</p>
-                    <div className="tag-row">
-                      <span className="mini-button">Call store</span>
-                      <span className="mini-button mini-button--alt">Get directions</span>
+          <div className="page-preview-shell page-preview-shell--full">
+            <div className="page-preview-topbar">
+              <div className="page-preview-topbar__controls">
+                                <div className={`readiness-widget ${isReadinessOpen ? 'is-open' : ''}`}>
+                  <button
+                    type="button"
+                    className="readiness-widget__toggle"
+                    onClick={() => setIsReadinessOpen((current) => !current)}
+                    aria-expanded={isReadinessOpen}
+                  >
+                    <span className="readiness-widget__sparkle" aria-hidden="true">
+                      ✦
+                    </span>
+                    <div className="readiness-widget__score">
+                      <strong>{displayedAiVisibilityScore}</strong> /100
+                      <span>Improve your AI readiness</span>
                     </div>
-                  </div>
-                  <div className="image-placeholder">Signature candy display</div>
-                </div>
-                <div className="page-preview-sections">
-                  <div>
-                    <h3>About this location</h3>
-                    <p>{business.summary}</p>
-                  </div>
-                  {hasGeneratedFaqs ? (
-                    <div className="page-faq-block">
-                      <h3>Popular questions</h3>
-                      <div className="page-faq-list">
-                        <div>
-                          <strong>Do you offer sugar-free candy?</strong>
-                          <p>Yes. Each location carries a rotating mix of sugar-free gummies, hard candy, and gift-ready treats.</p>
-                        </div>
-                        <div>
-                          <strong>Can I place a party order?</strong>
-                          <p>Yes. You can order party favors, custom candy mixes, and gift boxes for birthdays, showers, and office events.</p>
-                        </div>
-                        <div>
-                          <strong>Do all stores carry the same products?</strong>
-                          <p>Core favorites are available everywhere, with seasonal assortments and neighborhood-specific picks varying by location.</p>
-                        </div>
+
+                  </button>
+
+                  {isReadinessOpen ? (
+                    <div className="readiness-widget__panel">
+                      <div className="readiness-list">
+                        {displayedAiChecks.map((check) => (
+                          <div className="readiness-row" key={check.label}>
+                            <div className="readiness-row__top">
+                              <div className="readiness-row__label">
+                                <span className={`publisher-state readiness-badge ${check.value === 'Strong' ? 'is-ready' : ''}`}>
+                                  {check.value}
+                                </span>
+                                <strong>{check.label}</strong>
+                              </div>
+                              {check.label === 'LLM answerability' && !hasGeneratedFaqs ? (
+                                <button className="ai-action-button ai-action-button--inline" onClick={() => setHasGeneratedFaqs(true)}>
+                                  <span className="ai-action-button__icon" aria-hidden="true">
+                                    ✦
+                                  </span>
+                                  Generate FAQs
+                                </button>
+                              ) : null}
+                            </div>
+                            <p className="readiness-row__description">{check.note}</p>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   ) : null}
                 </div>
+                <select value={selectedLocation} onChange={(event) => setSelectedLocation(event.target.value)}>
+                  {locations.map((location) => (
+                    <option key={location.id} value={location.id}>
+                      {location.city}
+                    </option>
+                  ))}
+                </select>
+
+
               </div>
             </div>
 
-            <div className="panel panel--sticky">
-              <h3>AI readiness check</h3>
-              <p className="muted-copy">In our AI-first digital world, how your page performs with LLMs is even more important than how it looks.</p>
-
-              <div className="readiness-score">
-                <strong>{displayedAiVisibilityScore}</strong>
-                <span>AI visibility score</span>
-              </div>
-              <div className="readiness-list">
-                {displayedAiChecks.map((check) => (
-                  <div className="readiness-row" key={check.label}>
-                    <div>
-                      <strong>{check.label}</strong>
-                      <p>{check.note}</p>
+            <div className="page-preview-canvas">
+              <div
+                className="page-location-preview"
+                style={{
+                  '--page-brand-primary': business.brand.primary,
+                  '--page-brand-secondary': selectedAccent,
+                  '--page-brand-accent': business.brand.accent,
+                  '--page-brand-highlight': business.brand.accent,
+                  '--page-brand-ink': business.brand.ink,
+                  '--page-brand-soft': business.brand.soft,
+                  '--page-brand-cream': business.brand.cream,
+                }}
+              >
+                <header className="page-location-preview__header">
+                  <div className="page-location-preview__brand">
+                    <img src={lollipopLogo} alt={`${business.name} logo`} className="page-location-preview__logo" />
+                    <div className="page-location-preview__wordmark">
+                      <span>Mom and Pop</span>
+                      <strong>Lollipop Shop</strong>
                     </div>
-                    <span className={`publisher-state ${check.value === 'Strong' ? 'is-ready' : ''}`}>
-                      {check.value}
-                    </span>
                   </div>
-                ))}
+                  <div className="page-location-preview__account-actions">
+                    <span className="page-location-preview__account-button">Get in Touch</span>
+                  </div>
+                </header>
+
+                <nav className="page-location-preview__breadcrumb" aria-label="Preview breadcrumb">
+                  <a href="/">All Locations</a>
+                  <span>/</span>
+                  <a href="/">IL</a>
+                  <span>/</span>
+                  <a href="/">Chicago</a>
+                  <span>/</span>
+                  <span>{getLocationDisplayName(pageLocation)}</span>
+                </nav>
+
+                <section className="page-location-preview__hero">
+                  <div className="page-location-preview__hero-copy">
+                    <h2>{pageLocationLabel}</h2>
+                    <h3>{business.name}</h3>
+                    <div className="page-location-preview__status">
+                      <strong>Open Now</strong>
+                      <span>•</span>
+                      <span>Closes at 8:00 PM Wednesday</span>
+                    </div>
+                    <div className="page-location-preview__cta-row">
+                      <span className="page-location-preview__cta">Get Directions</span>
+                      <span className="page-location-preview__cta page-location-preview__cta--secondary">Call Store</span>
+                    </div>
+                  </div>
+
+                  <div className="page-location-preview__hero-media">
+                    <img
+                      src="https://images.unsplash.com/photo-1576712967455-c8d22580e9be?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                      alt=""
+                    />
+                  </div>
+                </section>
+
+                <section className="page-location-preview__core-info">
+                  <div className="page-location-preview__info-block">
+                    <h3>Find Us</h3>
+                    <p>{pageLocation.address.replace(', IL', '\nIL')}</p>
+
+                    <h3>Contact Us</h3>
+                    <ul className="page-location-preview__contact-list">
+                      <li>
+                        <span className="page-location-preview__contact-icon">⌕</span>
+                        <span>{pageLocation.phone}</span>
+                      </li>
+                      <li>
+                        <span className="page-location-preview__contact-icon">✉</span>
+                        <span>{pagePreviewEmail}</span>
+                      </li>
+                      <li>
+                        <span className="page-location-preview__contact-icon">↗</span>
+                        <span>{business.website.replace('https://', '')}</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="page-location-preview__info-block">
+                    <h3>Store Hours</h3>
+                    <div className="page-location-preview__hours-table">
+                      {pagePreviewHours.map(([day, hours]) => (
+                        <div className={`page-location-preview__hours-row ${day === 'Wednesday' ? 'is-today' : ''}`} key={`store-${day}`}>
+                          <span>{day}</span>
+                          <span>{hours}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="page-location-preview__info-block">
+                    <h3>Pickup Hours</h3>
+                    <div className="page-location-preview__hours-table">
+                      {pagePreviewHours.map(([day, hours]) => (
+                        <div className={`page-location-preview__hours-row ${day === 'Wednesday' ? 'is-today' : ''}`} key={`pickup-${day}`}>
+                          <span>{day}</span>
+                          <span>{hours === '10:00 AM - 7:00 PM' ? '10:00 AM - 6:00 PM' : hours}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+
+                {hasGeneratedFaqs ? (
+                  <section className="page-location-preview__faq">
+                    <h3>Frequently Asked Questions</h3>
+                    <div className="page-faq-list">
+                      <div>
+                        <strong>Do you offer sugar-free candy?</strong>
+                        <p>Yes. {business.name} at {pageLocationLabel} carries a rotating mix of sugar-free gummies, hard candy, and gift-ready treats.</p>
+                      </div>
+                      <div>
+                        <strong>Can I place a party order?</strong>
+                        <p>Yes. You can order party favors, custom candy mixes, and gift boxes for birthdays, showers, and office events from {business.name} at {pageLocationLabel}.</p>
+                      </div>
+                      <div>
+                        <strong>Do all stores carry the same products?</strong>
+                        <p>Core favorites are available everywhere, with seasonal assortments and neighborhood-specific picks at {business.name} at {pageLocationLabel}.</p>
+                      </div>
+                    </div>
+                  </section>
+                ) : null}
               </div>
-                            {!hasGeneratedFaqs ? (
-                <button className="ai-action-button" onClick={() => setHasGeneratedFaqs(true)}>
-                  <span className="ai-action-button__icon" aria-hidden="true">
-                    ✦
-                  </span>
-                  Generate FAQs
-                </button>
-              ) : null}
             </div>
           </div>
 
@@ -1185,12 +1343,6 @@ function App() {
                 onClick={() => setProductDecision('pages', 'skip', 'checkout')}
               >
                 Skip for now
-              </button>
-              <button
-                className="secondary-button"
-                onClick={() => setProductDecision('pages', 'draft', 'checkout')}
-              >
-                Continue with pages draft
               </button>
               <button
                 className="primary-button"
@@ -1207,6 +1359,7 @@ function App() {
     if (step === 'checkout') {
       return (
         <div className="screen screen--setup">
+          <div className="bundle-summary-slot">{renderCartSummary()}</div>
           <StepRail currentStep={step} />
           <SectionIntro
             eyebrow="Pay + publish"
@@ -1436,11 +1589,8 @@ function App() {
     );
   };
 
-  const shouldShowBundleSummary = ['listings', 'pages', 'checkout'].includes(step);
-
   return (
     <div className="prototype-shell">
-      {shouldShowBundleSummary ? renderCartSummary() : null}
       {renderFlowCard()}
     </div>
   );

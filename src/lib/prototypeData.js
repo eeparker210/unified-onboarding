@@ -35,7 +35,8 @@ export const business = {
 export const locations = [
   {
     id: 'mpl-001',
-    name: 'Mom and Pop Lollipop Shop - Wicker Park',
+    businessName: 'Mom and Pop Lollipop Shop',
+    city: 'Wicker Park',
     address: '1457 N Milwaukee Ave, Chicago, IL 60622',
     phone: '(312) 555-0145',
     hours: '9:00 AM - 8:00 PM',
@@ -43,7 +44,8 @@ export const locations = [
   },
   {
     id: 'mpl-002',
-    name: 'Mom and Pop Lollipop Shop - Lincoln Park',
+    businessName: 'Mom and Pop Lollipop Shop',
+    city: 'Lincoln Park',
     address: '2334 N Clark St, Chicago, IL 60614',
     phone: '(312) 555-0177',
     hours: '10:00 AM - 8:00 PM',
@@ -51,7 +53,8 @@ export const locations = [
   },
   {
     id: 'mpl-003',
-    name: 'Mom and Pop Lollipop Shop - Evanston',
+    businessName: 'Mom and Pop Lollipop Shop',
+    city: 'Evanston',
     address: '608 Davis St, Evanston, IL 60201',
     phone: '(847) 555-0126',
     hours: '10:00 AM - 7:00 PM',
@@ -59,7 +62,8 @@ export const locations = [
   },
   {
     id: 'mpl-004',
-    name: 'Mom and Pop Lollipop Shop - Naperville',
+    businessName: 'Mom and Pop Lollipop Shop',
+    city: 'Naperville',
     address: '16 W Jefferson Ave, Naperville, IL 60540',
     phone: '(630) 555-0188',
     hours: '10:00 AM - 8:00 PM',
@@ -67,7 +71,8 @@ export const locations = [
   },
   {
     id: 'mpl-005',
-    name: 'Mom and Pop Lollipop Shop - Oak Park',
+    businessName: 'Mom and Pop Lollipop Shop',
+    city: 'Oak Park',
     address: '1042 Lake St, Oak Park, IL 60301',
     phone: '(708) 555-0104',
     hours: '10:00 AM - 7:00 PM',
@@ -75,7 +80,8 @@ export const locations = [
   },
   {
     id: 'mpl-006',
-    name: 'Mom and Pop Lollipop Shop - Schaumburg',
+    businessName: 'Mom and Pop Lollipop Shop',
+    city: 'Schaumburg',
     address: '5 Woodfield Mall, Schaumburg, IL 60173',
     phone: '(847) 555-0164',
     hours: '11:00 AM - 8:00 PM',
@@ -83,7 +89,8 @@ export const locations = [
   },
   {
     id: 'mpl-007',
-    name: 'Mom and Pop Lollipop Shop - Oak Brook',
+    businessName: 'Mom and Pop Lollipop Shop',
+    city: 'Oak Brook',
     address: '212 Oakbrook Center, Oak Brook, IL 60523',
     phone: '(630) 555-0191',
     hours: '10:00 AM - 8:00 PM',
